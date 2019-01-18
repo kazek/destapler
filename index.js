@@ -1,3 +1,9 @@
+const {
+  createDependenciesTree,
+} = require('./dependenciesTree');
+
 module.exports = () => {
-  console.log('Hello friends!');
+
+  const depTree = createDependenciesTree();
+  console.log(depTree);
 }
