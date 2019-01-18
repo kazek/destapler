@@ -8,9 +8,7 @@ const createDependenciesTree = (path = process.cwd()) => {
 
   return Object.keys(package.dependencies)
     .map(name => {
-      let packageData = {
-        name
-      };
+      let packageData = { name };
       const fullPath = `${path}/node_modules/${name}/`;
       const flatPath = `${process.cwd()}/node_modules/${name}/`;
       packageData.path = fs.existsSync(fullPath) && fullPath || fs.existsSync(flatPath) && flatPath || null;
@@ -25,6 +23,20 @@ const createDependenciesTree = (path = process.cwd()) => {
     });
 };
 
+const flattenDependencies = dep => {
+  let deps = (dep.dependencies || []).map(d => d.path);
+  dep.dependencies && dep.dependencies
+    .forEach(d => deps.push(...flattenDependencies(d)));
+  return deps;
+};
+
+const getFlatDependenciesTree = () => createDependenciesTree()
+  .map(d => ({
+    name: d.name,
+    path: d.path,
+    dependencies: [...new Set(flattenDependencies(d))]
+  }));
+
 module.exports = {
-  createDependenciesTree
+  getFlatDependenciesTree
 }

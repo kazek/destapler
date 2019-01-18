@@ -1,9 +1,8 @@
 const {
-  createDependenciesTree,
+  getFlatDependenciesTree,
 } = require('./dependenciesTree');
 
 module.exports = () => {
-
-  const depTree = createDependenciesTree();
+  const depTree = getFlatDependenciesTree();
   console.log(depTree);
 }
