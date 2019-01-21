@@ -7,10 +7,12 @@ const {
 } = require('./moduleSize');
 
 module.exports = () => {
-  const depTree = getFlatDependenciesTree();
-  let promises = [];
-  depTree.forEach(m => promises.push(calculateModuleSize(m).then(size => m.size = size)));
-  Promise.all(promises).then(() => {
-    console.log(depTree.map(d => ({name: d.name, size: d.size})));
+  Promise.all(
+    getFlatDependenciesTree()
+      .map(n => calculateModuleSize(n)
+      .then(size => ({...n, size : size})))
+  )
+    .then((treeWithSizes) => {
+      console.log(treeWithSizes.map(a => ({name: a.name, size: a.size})));
   });
 }

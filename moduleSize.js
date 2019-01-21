@@ -1,26 +1,18 @@
 const fs = require('fs');
 
-const calculateModuleSize = module => new Promise((resolve, reject) => {
-  let getSizePromises = [];
-  
-  let size = getSizePromises.push(getFileSize(module.path).then(s => size += s));
-  
-  module.dependencies.reduce((size, path) => {
-    path && getSizePromises.push(getFileSize(path).then(s => size += s));
-    return size;
-  }, 0);
-  
-  Promise.all(getSizePromises)
-    .then(() => resolve(size))
-    .catch(e => reject(e));
-});
+const calculateModuleSize = module => Promise.all(
+    [getFileSize(module.path), ...module.dependencies.map(path => (path && getFileSize(path)))]
+  ).then(sizes => sizes.reduce((sum, size) => sum + size, 0));
 
 const getDirectorySize = (path) => new Promise((resolve, reject) => {
   fs.readdir(path, (err, list) => {
     if (err) reject(err);
-    let promises = [];
-    list.forEach(file => (file != 'node_modules') && promises.push(getFileSize(`${path}/${file}`)));
-    Promise.all(promises).then(sizes => resolve(sizes.reduce((sum, size) => sum + size, 0)));
+    Promise.all(
+      list
+        .filter(file => (file != 'node_modules'))
+        .map(file => getFileSize(`${path}/${file}`))
+    ).then(sizes => resolve(sizes.reduce((sum, size) => sum + size, 0)))
+      .catch(reject);
   });
 });
 
