@@ -4,6 +4,11 @@ const {
 
 const calculateModuleSize = require('./moduleSize');
 
+const findInDirectory = require('./find');
+
+//console.log(findInDirectory(/require\([^\)]+\)/, process.cwd()));
+
+
 module.exports = () => {
   Promise.all(
     getFlatDependenciesTree()

@@ -5,7 +5,7 @@ const getDirectorySize = path => new Promise((resolve, reject) => {
     if (err) reject(err);
     Promise.all(
       list
-        .filter(file => (file != 'node_modules'))
+        .filter(file => (file !== 'node_modules'))
         .map(file => getFileSize(`${path}/${file}`))
     ).then(sizes => resolve(sizes.reduce((sum, size) => sum + size, 0)))
       .catch(reject);
