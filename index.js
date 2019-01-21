@@ -2,9 +2,7 @@ const {
   getFlatDependenciesTree,
 } = require('./dependenciesTree');
 
-const {
-  calculateModuleSize
-} = require('./moduleSize');
+const calculateModuleSize = require('./moduleSize');
 
 module.exports = () => {
   Promise.all(
