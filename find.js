@@ -13,11 +13,11 @@ const findInFile = (pattern, path) => fs.readFileSync(path, 'utf8')
   let results = [];
   fs.readdirSync(path).forEach(file => {
     if (file !== 'node_modules') {
-      if (fs.statSync(file).isDirectory()) {
-        results = [...results, ...findInDirectory(pattern, file)];
+      if (fs.statSync(`${path}/${file}`).isDirectory()) {
+        results = [...results, ...findInDirectory(pattern, `${path}/${file}`)];
       } else {
         if(~extensions.indexOf(file.split('.').pop())) {
-          results = [...results, ...findInFile(pattern, file)];
+          results = [...results, ...findInFile(pattern, `${path}/${file}`)];
         }
       }
     }
