@@ -6,8 +6,20 @@ const calculateModuleSize = require('./moduleSize');
 
 const findInDirectory = require('./find');
 
-console.log(findInDirectory(/require\([\`\'\"].[^\.\/]..*\)/, process.cwd()));
 
+const countImports = () => findInDirectory(/require\([\`\'\"].[^\.\/]..*\)/i, process.cwd())
+  .map(l => {
+    const m = l.match(/require\([\`\'\"]{1}([^\`\'\"\/]*)/i);
+    return m && m[1];
+  }).reduce((result, name) => {
+    if (result[name]) {
+      result[name]++;
+    } else {
+      result[name] = 1;
+    }
+    return result;
+  }, {});
+  
 
 module.exports = () => {
   Promise.all(
@@ -16,6 +28,11 @@ module.exports = () => {
       .then(size => ({...n, size : size})))
   )
     .then((treeWithSizes) => {
-      console.log(treeWithSizes.map(a => ({name: a.name, size: a.size})));
+      const numberOfImports = countImports();
+      console.log(treeWithSizes.map(a => ({
+        name: a.name,
+        size: a.size,
+        imports: numberOfImports[a.name] || 0
+      })));
   });
 }
