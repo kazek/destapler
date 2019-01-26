@@ -24,6 +24,32 @@ const getFileSize = path => new Promise((resolve, reject) => {
   });
 });
 
-module.exports = module => Promise.all(
+const calculateModuleSize = module => Promise.all(
     [getFileSize(module.path), ...module.dependencies.map(path => (path && getFileSize(path)))]
   ).then(sizes => sizes.reduce((sum, size) => sum + size, 0));
+
+const checkSharedDependencies = flatDependenciesTree => flatDependenciesTree
+    .map(d => d.dependencies)
+    .reduce((depArray, depList) => [...depArray, ...depList], [])
+    .reduce((result, path) => {
+      if(result[path]) {
+        result[path]++;
+      } else {
+        result[path] = 1;
+      }
+      return result;
+    }, {});
+
+
+
+module.exports = (flatDependenciesTree, mode = 'full') => {
+  if(mode !== 'full') {
+    const sharedDependencies = checkSharedDependencies(flatDependenciesTree);
+  }
+
+  return Promise.all(
+    flatDependenciesTree
+    .map(n => calculateModuleSize(n)
+      .then(size => ({ ...n, size: size })))
+  )
+}

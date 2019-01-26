@@ -2,7 +2,7 @@ const {
   getFlatDependenciesTree,
 } = require('./dependenciesTree');
 
-const calculateModuleSize = require('./moduleSize');
+const calculateModulesSizes = require('./moduleSize');
 
 const findInDirectory = require('./find');
 
@@ -13,7 +13,7 @@ const setEmotion = (weight) => {
   if (weight > 0.5) return '😕';
   if (weight > 0.3) return '😐';
   if (weight > 0.1) return '🙂';
-  return '😊'
+  return '😊';
 }
 
 const countImports = () => findInDirectory(/require\([\`\'\"].[^\.\/]..*\)/i, process.cwd())
@@ -28,15 +28,9 @@ const countImports = () => findInDirectory(/require\([\`\'\"].[^\.\/]..*\)/i, pr
     }
     return result;
   }, {});
-  
 
 module.exports = () => {
-  Promise.all(
-    getFlatDependenciesTree()
-      .map(n => calculateModuleSize(n)
-      .then(size => ({...n, size : size})))
-  )
-    .then((treeWithSizes) => {
+    calculateModulesSizes(getFlatDependenciesTree()).then((treeWithSizes) => {
       const numberOfImports = countImports();
       const maxSize = Math.max(...treeWithSizes.map(a => a.size));
       let result = treeWithSizes.map(a => {
