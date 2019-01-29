@@ -24,9 +24,9 @@ const getFileSize = path => new Promise((resolve, reject) => {
   });
 });
 
-const calculateModuleSize = module => Promise.all(
-    [getFileSize(module.path), ...module.dependencies.map(path => (path && getFileSize(path)))]
-  ).then(sizes => sizes.reduce((sum, size) => sum + size, 0));
+const calculateDependenciesSizes = module => Promise.all(
+    module.dependencies.map(path => (path && getFileSize(path).then(fullSize => ({path, fullSize}))))
+  );
 
 const checkSharedDependencies = flatDependenciesTree => flatDependenciesTree
     .map(d => d.dependencies)
@@ -42,14 +42,27 @@ const checkSharedDependencies = flatDependenciesTree => flatDependenciesTree
 
 
 
-module.exports = (flatDependenciesTree, mode = 'full') => {
-  if(mode !== 'full') {
-    const sharedDependencies = checkSharedDependencies(flatDependenciesTree);
-  }
+module.exports = (flatDependenciesTree) => {
+  const sharedDependencies = checkSharedDependencies(flatDependenciesTree);
 
   return Promise.all(
     flatDependenciesTree
-    .map(n => calculateModuleSize(n)
-      .then(size => ({ ...n, size: size })))
+      .map(module => calculateDependenciesSizes(module)
+      .then(sizes => {
+        return sizes;
+      })
+      .then(sizes => ({ 
+        ...module,
+        fullSize: sizes.reduce((sum, item) => sum + item.fullSize, 0),
+        sharedSize: sizes.reduce((sum, item) => (sum + parseInt(item.fullSize / sharedDependencies[item.path])), 0),
+        ownSize: sizes.reduce((sum, item) => (sum + (sharedDependencies[item.path] > 1 ? 0 : item.fullSize)), 0)
+      }))
+      .then(module => getFileSize(module.path).then(moduleSize => ({
+        ...module,
+        fullSize: module.fullSize + moduleSize,
+        sharedSize: module.sharedSize + moduleSize,
+        ownSize: module.ownSize + moduleSize
+      })))
+      )
   )
 }

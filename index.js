@@ -35,12 +35,15 @@ module.exports = () => {
       const maxSize = Math.max(...treeWithSizes.map(a => a.size));
       let result = treeWithSizes.map(a => {
         const imports = numberOfImports[a.name] || 0;
-        const weight = (imports ? a.size / imports : a.size * 2) / maxSize;
+        const size = a.ownSize;
+        const weight = (imports ? size / imports : size * 2) / maxSize;
         const emotion = setEmotion(weight)
 
         return {
           name: a.name,
-          size: a.size,
+          sharedSize: a.sharedSize,
+          fullSize: a.fullSize,
+          ownSize: a.ownSize,
           imports,
           weight,
           emotion
@@ -50,7 +53,7 @@ module.exports = () => {
       result.sort((a, b) => b.weight - a.weight);
       
       console.log(
-        result.map(a => ({name: a.name, emotion: a.emotion}))
+        result.map(a => ({name: a.name, emotion: a.emotion, sharedSize: a.sharedSize, fullSize: a.fullSize, ownSize: a.ownSize}))
       );
   });
 }
