@@ -30,30 +30,51 @@ const countImports = () => findInDirectory(/require\([\`\'\"].[^\.\/]..*\)/i, pr
   }, {});
 
 module.exports = () => {
-    calculateModulesSizes(getFlatDependenciesTree()).then((treeWithSizes) => {
-      const numberOfImports = countImports();
-      const maxSize = Math.max(...treeWithSizes.map(a => a.size));
-      let result = treeWithSizes.map(a => {
-        const imports = numberOfImports[a.name] || 0;
-        const size = a.ownSize;
-        const weight = (imports ? size / imports : size * 2) / maxSize;
-        const emotion = setEmotion(weight)
+  let action;
+  let sizeType;
 
-        return {
-          name: a.name,
-          sharedSize: a.sharedSize,
-          fullSize: a.fullSize,
-          ownSize: a.ownSize,
-          imports,
-          weight,
-          emotion
-        }
-      });
-      
-      result.sort((a, b) => b.weight - a.weight);
-      
-      console.log(
-        result.map(a => ({name: a.name, emotion: a.emotion, sharedSize: a.sharedSize, fullSize: a.fullSize, ownSize: a.ownSize}))
-      );
+  switch (process.argv[2]) {
+    case 'fast':
+      action = 'run';
+      sizeType = 'ownSize';
+      break;
+    case 'slow':
+      action = 'run';
+      sizeType = 'sharedSize';
+      break;
+    case 'full':
+      action = 'run';
+      sizeType = 'fullSize';
+      break;
+    default:
+      action = 'run';
+      sizeType = 'ownSize';
+  }
+
+  calculateModulesSizes(getFlatDependenciesTree()).then((treeWithSizes) => {
+    const numberOfImports = countImports();
+    const maxSize = Math.max(...treeWithSizes.map(a => a[sizeType]));
+    let result = treeWithSizes.map(a => {
+      const imports = numberOfImports[a.name] || 0;
+      const size = a[sizeType];
+      const weight = (imports ? size / imports : size * 2) / maxSize;
+      const emotion = setEmotion(weight)
+
+      return {
+        name: a.name,
+        sharedSize: a.sharedSize,
+        fullSize: a.fullSize,
+        ownSize: a.ownSize,
+        imports,
+        weight,
+        emotion
+      }
+    });
+    
+    result.sort((a, b) => b.weight - a.weight);
+    
+    console.log(
+      result.map(a => ({emotion: a.emotion, size: a[sizeType], name: a.name}))
+    );
   });
 }
