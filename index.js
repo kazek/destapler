@@ -6,6 +6,8 @@ const calculateModulesSizes = require('./moduleSize');
 
 const findInDirectory = require('./find');
 
+const package = require('./package.json');
+
 const setEmotion = (weight) => {
   if (weight > 0.8) return '😱';
   if (weight > 0.7) return '😨';
@@ -35,6 +37,7 @@ module.exports = () => {
 
   switch (process.argv[2]) {
     case 'fast':
+    case undefined:
       action = 'run';
       sizeType = 'ownSize';
       break;
@@ -47,9 +50,21 @@ module.exports = () => {
       sizeType = 'fullSize';
       break;
     default:
-      action = 'run';
-      sizeType = 'ownSize';
+      action = 'help';
   }
+
+  if(action === 'help') {
+    return console.info(`
+      ${package.name} version ${package.version}
+
+      [OPTIONS]
+        fast    calculates results optimized for short term work
+        slow    calculates results optimized for long term work
+        full    calculates results based on size of dependency
+        help    shows this information
+    `)
+  }
+
 
   calculateModulesSizes(getFlatDependenciesTree()).then((treeWithSizes) => {
     const numberOfImports = countImports();
