@@ -1,14 +1,14 @@
 const fs = require('fs');
 
-let dependencyStack = []; // to handle circural dependencies
+const dependencyStack = []; // to handle circural dependencies
 
 const createDependenciesTree = (path = process.cwd()) => {
-  const package = require(`${path}/package.json`);
-  if (!package.dependencies) return [];
+  const packageJson = require(`${path}/package.json`);
+  if (!packageJson.dependencies) return [];
 
-  return Object.keys(package.dependencies)
+  return Object.keys(packageJson.dependencies)
     .map(name => {
-      let packageData = { name };
+      const packageData = { name };
       const fullPath = `${path}/node_modules/${name}/`;
       const flatPath = `${process.cwd()}/node_modules/${name}/`;
       packageData.path = fs.existsSync(fullPath) && fullPath || fs.existsSync(flatPath) && flatPath || null;
@@ -24,8 +24,8 @@ const createDependenciesTree = (path = process.cwd()) => {
 };
 
 const flattenDependencies = dep => {
-  let deps = (dep.dependencies || []).map(d => d.path);
-  dep.dependencies && dep.dependencies
+  const deps = (dep.dependencies || []).map(d => d.path);
+  (dep.dependencies || [])
     .forEach(d => deps.push(...flattenDependencies(d)));
   return deps;
 };
@@ -39,4 +39,4 @@ const getFlatDependenciesTree = () => createDependenciesTree()
 
 module.exports = {
   getFlatDependenciesTree
-}
+};
