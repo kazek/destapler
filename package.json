@@ -7,12 +7,23 @@
     "fat-pruner": "bin/fat-pruner.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "eslint --ignore-path .gitignore ."
   },
   "keywords": [
     "npm",
     "modules"
   ],
   "author": "kazek",
-  "license": "ISC"
+  "license": "ISC",
+  "eslintConfig": {
+    "env": {
+      "browser": false,
+      "node": true
+    }
+  },
+  "devDependencies": {
+    "eslint": "^5.13.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.16.0"
+  }
 }

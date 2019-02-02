@@ -1,0 +1,15 @@
+{
+    "extends": "airbnb-base",
+    "rules": {
+        "no-bitwise": "off",
+        "no-use-before-define": "off",
+        "arrow-parens": "off",
+        "max-len": "off",
+        "no-mixed-operators": "off",
+        "global-require": "off",
+        "import/no-dynamic-require": "off",
+        "comma-dangle": "off",
+        "no-console": "off",
+        "no-useless-escape": "off"
+    }
+}
