@@ -37,6 +37,4 @@ const getFlatDependenciesTree = () => createDependenciesTree()
     dependencies: [...new Set(flattenDependencies(d))]
   }));
 
-module.exports = {
-  getFlatDependenciesTree
-};
+module.exports = getFlatDependenciesTree;
