@@ -1,10 +1,10 @@
 {
-  "name": "fat-pruner",
+  "name": "destapler",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "bin": {
-    "fat-pruner": "bin/fat-pruner.js"
+    "fat-pruner": "bin/destapler.js"
   },
   "scripts": {
     "test": "eslint --ignore-path .gitignore ."

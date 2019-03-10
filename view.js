@@ -19,11 +19,11 @@ const printDepInfo = dep => {
   const fullLength = parseInt(dep.weight * maxWidth, 10);
   const emotion = setEmotion(dep.weight);
   const clr = '\x1b[0m';
-  const bg = '\x1b[7m';
+  const inv = '\x1b[7m';
   const dim = '\x1b[2m';
 
   const bar = `${dep.name}${[...new Array(maxWidth - dep.name.length)].join(' ')}`;
-  console.log(`${clr}${emotion} ${bg}${[bar.slice(0, fullLength), clr, bar.slice(fullLength)].join('')}${dim} ${pad(dep.imports, 3)} ${pad(parseInt(dep.fullSize / 1024, 10), 9)}KB ${pad(parseInt(dep.ownSize / 1024, 10), 9)}KB`);
+  console.log(`${clr}${emotion} ${inv}${[bar.slice(0, fullLength), clr, bar.slice(fullLength)].join('')}${dim} ${pad(dep.imports, 3)} ${pad(parseInt(dep.fullSize / 1024, 10), 9)}KB ${pad(parseInt(dep.ownSize / 1024, 10), 9)}KB`);
 };
 
 const printHelp = () => {
