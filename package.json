@@ -1,10 +1,10 @@
 {
   "name": "destapler",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "",
   "main": "index.js",
   "bin": {
-    "fat-pruner": "bin/destapler.js"
+    "destapler": "bin/destapler.js"
   },
   "scripts": {
     "test": "eslint --ignore-path .gitignore ."
@@ -14,7 +14,8 @@
     "modules"
   ],
   "author": "kazek",
-  "license": "ISC",
+  "repository": "github:kazek/destapler",
+  "license": "MIT",
   "eslintConfig": {
     "env": {
       "browser": false,
@@ -25,5 +26,6 @@
     "eslint": "^5.13.0",
     "eslint-config-airbnb-base": "^13.1.0",
     "eslint-plugin-import": "^2.16.0"
-  }
+  },
+  "dependencies": {}
 }
